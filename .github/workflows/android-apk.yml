@@ -1,1 +1,42 @@
+name: Android APK Build
 
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Depoyu indir
+        uses: actions/checkout@v4
+
+      - name: Flutter kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+
+      - name: ZIP dosyasını aç
+        run: unzip nnb_gida_katalog_flutter.zip
+
+      - name: Android proje dosyalarını oluştur
+        run: |
+          cd nnb_gida_katalog
+          flutter create --platforms=android .
+
+      - name: Paketleri yükle
+        run: |
+          cd nnb_gida_katalog
+          flutter pub get
+
+      - name: APK oluştur
+        run: |
+          cd nnb_gida_katalog
+          flutter build apk --release
+
+      - name: APK dosyasını yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: NNB-GIDA-APK
+          path: nnb_gida_katalog/build/app/outputs/flutter-apk/app-release.apk
